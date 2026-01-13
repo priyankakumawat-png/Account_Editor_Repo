@@ -10,49 +10,73 @@ exports.getPartnerStores = async (req, res) => {
       maxDays,
       sortBy,
       tags,
-      tagsLogic // optional: 'and' (default) or 'or'
+      tagsLogic //'and' (default) or 'or'
     } = req.query;
 
     const matchStage = {};
 
-    // ✅ TAG ARRAY (lowercase + trim)
+    //TAG ARRAY (lowercase + trim)
     const tagArray = tags
       ? tags.split(',').map(t => t.trim().toLowerCase())
       : [];
 
-    // 🔹 STATUS FILTER
+    //STATUS FILTER
     if (status) {
       matchStage.status = { $in: status.split(',') };
     }
 
-    // 🔹 PLAN FILTER
+    //PLAN FILTER
     if (plan) {
       matchStage.AEplan = { $in: plan.split(',') };
     }
 
-    // 🔹 DAYS FILTER
+    //DAYS FILTER
     if (minDays || maxDays) {
       matchStage.daysSinceInstall = {};
       if (minDays) matchStage.daysSinceInstall.$gte = Number(minDays);
       if (maxDays) matchStage.daysSinceInstall.$lte = Number(maxDays);
     }
 
-    // 🔹 SORT
+    //SORT
     let sortStage = {};
+
     switch (sortBy) {
       case 'oldest':
         sortStage = { 'latestEvent.occurredAt': 1 };
         break;
+
       case 'newest':
+        sortStage = { 'latestEvent.occurredAt': -1 };
+        break;
+
+      //EDITS SORTING
+      case 'higher_edits':
+        sortStage = { totalEdit: -1 };
+        break;
+
+      case 'lower_edits':
+        sortStage = { totalEdit: 1 };
+        break;
+
+      //REVENUE SORTING
+      case 'higher_revenue':
+        sortStage = { customerRevenue: -1 };
+        break;
+
+      case 'lower_revenue':
+        sortStage = { customerRevenue: 1 };
+        break;
+
       default:
         sortStage = { 'latestEvent.occurredAt': -1 };
     }
 
+
     const stores = await PartnerEvent.aggregate([
-      // 1️⃣ Latest event first
+      //Latest event first
       { $sort: { occurredAt: -1 } },
 
-      // 2️⃣ One store = one latest event
+      //One store = one latest event
       {
         $group: {
           _id: '$shop.shopId',
@@ -60,7 +84,7 @@ exports.getPartnerStores = async (req, res) => {
         },
       },
 
-      // 3️⃣ Days since install
+      //Days since install
       {
         $addFields: {
           daysSinceInstall: {
@@ -73,40 +97,10 @@ exports.getPartnerStores = async (req, res) => {
         },
       },
 
-      // 4️⃣ Status + AE Plan
-      {
-        $addFields: {
-          AEplan: {
-            $ifNull: ['$latestEvent.charge.name', null],
-          },
-          status: {
-            $switch: {
-              branches: [
-                {
-                  case: { $eq: ['$latestEvent.typename', 'SubscriptionChargeActivated'] },
-                  then: 'active',
-                },
-                {
-                  case: { $eq: ['$latestEvent.typename', 'RelationshipInstalled'] },
-                  then: 'trial',
-                },
-                {
-                  case: {
-                    $in: ['$latestEvent.typename', ['RelationshipUninstalled', 'AppUninstalled']],
-                  },
-                  then: 'uninstall',
-                },
-              ],
-              default: '$latestEvent.typename',
-            },
-          },
-        },
-      },
-
-      // 5️⃣ First filter (status, plan, days)
+      //First filter (status, plan, days)
       { $match: matchStage },
 
-      // 6️⃣ JOIN PartnerStore
+      //JOIN PartnerStore
       {
         $lookup: {
           from: 'partnerstores',
@@ -122,7 +116,48 @@ exports.getPartnerStores = async (req, res) => {
         },
       },
 
-      // ✅ NORMALIZE TAGS (case-insensitive)
+      {
+        $addFields: {
+          totalEdit: { $ifNull: ['$partnerStore.totalEdit', 0] },
+          upsellRevenue: { $ifNull: ['$partnerStore.upsellRevenue', 0] },
+          lifeTimeValue: { $ifNull: ['$partnerStore.lifeTimeValue', 0] },
+          customerRevenue: { $ifNull: ['$partnerStore.customerRevenue', 0] },
+        },
+      },
+
+      {
+        $addFields: {
+          status: {
+            $cond: [
+              { $eq: ['$partnerStore.isBlock', true] },
+              'blocked', //highest priority
+              {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ['$latestEvent.typename', 'SubscriptionChargeActivated'] },
+                      then: 'active',
+                    },
+                    {
+                      case: { $eq: ['$latestEvent.typename', 'RelationshipInstalled'] },
+                      then: 'trial',
+                    },
+                    {
+                      case: {
+                        $in: ['$latestEvent.typename', ['RelationshipUninstalled', 'AppUninstalled']],
+                      },
+                      then: 'uninstall',
+                    },
+                  ],
+                  default: '$latestEvent.typename',
+                },
+              },
+            ],
+          },
+        },
+      },
+
+      //NORMALIZE TAGS (case-insensitive)
       {
         $addFields: {
           normalizedTags: {
@@ -135,41 +170,41 @@ exports.getPartnerStores = async (req, res) => {
         },
       },
 
-      // 7️⃣ FINAL FILTERS (shopify plan + TAGS AND/OR LOGIC)
+      //FINAL FILTERS (shopify plan + TAGS AND/OR LOGIC)
       {
         $match: {
           ...matchStage,
           ...(shopify_plan
             ? {
-                'partnerStore.shopJson.plan_name': {
-                  $in: shopify_plan.split(','),
-                },
-              }
+              'partnerStore.shopJson.plan_name': {
+                $in: shopify_plan.split(','),
+              },
+            }
             : {}),
           ...(tagArray.length
             ? {
-                $expr:
-                  (tagsLogic && tagsLogic.toLowerCase() === 'or')
-                    ? {
-                        // ✅ OR logic: kisi bhi tag match ho
-                        $gt: [
-                          {
-                            $size: {
-                              $setIntersection: [tagArray, '$normalizedTags'],
-                            },
-                          },
-                          0,
-                        ],
-                      }
-                    : {
-                        // ✅ Default AND logic (existing)
-                        $and: [
-                          { $isArray: '$normalizedTags' },
-                          { $eq: [{ $size: '$normalizedTags' }, tagArray.length] }, // exact length
-                          { $setIsSubset: [tagArray, '$normalizedTags'] },           // all required tags
-                        ],
+              $expr:
+                (tagsLogic && tagsLogic.toLowerCase() === 'or')
+                  ? {
+                    //OR logic
+                    $gt: [
+                      {
+                        $size: {
+                          $setIntersection: [tagArray, '$normalizedTags'],
+                        },
                       },
-              }
+                      0,
+                    ],
+                  }
+                  : {
+                    //Default AND logic (existing)
+                    $and: [
+                      { $isArray: '$normalizedTags' },
+                      { $eq: [{ $size: '$normalizedTags' }, tagArray.length] }, // exact length
+                      { $setIsSubset: [tagArray, '$normalizedTags'] },           // all required tags
+                    ],
+                  },
+            }
             : {}),
         },
       },

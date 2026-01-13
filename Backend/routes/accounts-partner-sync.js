@@ -5,9 +5,6 @@ const {
 
 const router = express.Router();
 
-/**
- * POST /partner/sync-from-partner
- */
 router.post('/sync-from-partner', syncFromPartner);
 
 module.exports = router;

@@ -8,7 +8,10 @@ const {
 } = require('../controllers/partnerDetailsController');
 
 // router.post('/sync', PartnerStoreDetails);
+const { protect, onlySuperAdmin } = require('../middleware/auth');
 
+// 🔐 Protected (token REQUIRED)
+router.use(protect, onlySuperAdmin);
 router.get('/details', getPartnerStoreDetails);
 
 router.put('/add_tags', updateTagsToStores);

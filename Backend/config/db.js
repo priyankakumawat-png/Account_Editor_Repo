@@ -1,4 +1,3 @@
-// config/db.js
 const mongoose = require('mongoose');
 
 async function connectDb() {
@@ -9,7 +8,7 @@ async function connectDb() {
 
   await mongoose.connect(uri, {});
 
-  console.log('✅ MongoDB connected');
+  console.log('MongoDB connected');
 }
 
 module.exports = connectDb;

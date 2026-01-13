@@ -45,7 +45,7 @@ const PartnerEventSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// 🔥 Prevent duplicate events
+//Prevent duplicate events
 PartnerEventSchema.index(
   {
     typename: 1,

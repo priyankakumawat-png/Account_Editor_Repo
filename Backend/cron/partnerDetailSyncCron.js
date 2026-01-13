@@ -6,12 +6,11 @@ module.exports = async function partnerDetailSyncCron() {
   console.log('🔁 PartnerStore sync cron started');
 
   try {
-    // your existing cron logic goes here exactly as is
     const domains = await PartnerEvent.distinct('shop.myshopifyDomain');
     const validDomains = domains.filter(Boolean);
 
     if (!validDomains.length) {
-      console.log('ℹ️ No domains found');
+      console.log('No domains found');
       return;
     }
 
@@ -32,7 +31,7 @@ module.exports = async function partnerDetailSyncCron() {
         const shopJson = result?.shopJson;
 
         if (!shopJson || !shopJson.domain) {
-          console.warn(`⚠️ No valid shopJson for ${domain}, skipping`);
+          console.warn(`No valid shopJson for ${domain}, skipping`);
           continue;
         }
 
@@ -59,20 +58,25 @@ module.exports = async function partnerDetailSyncCron() {
               tags: result.tags || [],
               segments: result.segments || [],
               notes: result.notes,
+              lifeTimeValue: result.lifeTimeValue || 0,
+              upsellRevenue: result.upsellRevenue || 0,
+              orders: result.orders || 0,
+              totalEdit: result.totalEdit || 0,
+              customerRevenue: result.customerRevenue || 0
             },
           },
           { upsert: true }
         );
 
-        console.log(`✅ Saved partner store: ${shopJson.domain}`);
+        console.log('Saved partner store: ${shopJson.domain}');
         await new Promise((r) => setTimeout(r, 500));
       } catch (err) {
-        console.error(`❌ Failed for ${domain}`, err.response?.data || err.message);
+        console.error('Failed for ${domain}', err.response?.data || err.message);
       }
     }
 
-    console.log('✅ PartnerStore sync cron completed');
+    console.log('PartnerStore sync cron completed');
   } catch (err) {
-    console.error('🔥 PartnerStore cron failed', err);
+    console.error('PartnerStore cron failed', err);
   }
 };

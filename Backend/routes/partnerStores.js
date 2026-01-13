@@ -4,10 +4,12 @@ const {
 } = require('../controllers/partnerStoresController');
 
 const router = express.Router();
+const { protect, onlySuperAdmin } = require('../middleware/auth');
 
-/**
- * GET /partnerevents/stores
- */
+//Protected (token REQUIRED)
+router.use(protect, onlySuperAdmin);
+
+//GET /partnerevents/stores
 router.get('/stores', getPartnerStores);
 
 module.exports = router;

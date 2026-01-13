@@ -21,6 +21,12 @@ const PartnerStoreSchema = new mongoose.Schema(
       index: true,
     },
 
+    lifeTimeValue: { type: Number, default: 0 },
+    upsellRevenue: { type: Number, default: 0 },
+    orders: { type: Number, default: 0 },
+    totalEdit: { type: Number, default: 0 },
+    customerRevenue: { type: Number, default: 0 },
+
     shopJson: Object,
 
     planName: String,
@@ -48,7 +54,7 @@ const PartnerStoreSchema = new mongoose.Schema(
 
     usedDays: Number,
     tags: {
-      type: [String], 
+      type: [String],
       index: true,
     },
     segments: {

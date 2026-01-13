@@ -18,17 +18,17 @@ exports.getPartnerStoreDetails = async (req, res) => {
         },
       },
 
-      // 🔹 Join with PartnerEvent
+      // Join with PartnerEvent
       {
         $lookup: {
-          from: 'partnerevents', // 🔥 collection name (IMPORTANT)
+          from: 'partnerevents', //collection name (IMPORTANT)
           localField: 'myshopifyDomain',
           foreignField: 'shop.myshopifyDomain',
           as: 'events',
         },
       },
 
-      // 🔹 Latest event
+      //Latest event
       {
         $addFields: {
           latestEvent: {
@@ -45,7 +45,7 @@ exports.getPartnerStoreDetails = async (req, res) => {
         },
       },
 
-      // 🔹 Status calculation
+      //Status calculation
       {
         $addFields: {
           status: {
@@ -88,7 +88,7 @@ exports.getPartnerStoreDetails = async (req, res) => {
         },
       },
 
-      // 🔹 Cleanup response
+      //Cleanup response
       {
         $project: {
           _id: 0,
@@ -99,6 +99,11 @@ exports.getPartnerStoreDetails = async (req, res) => {
           notes: 1,
           isBlock: 1,
           planName: 1,
+          orders: 1,
+          totalEdit: 1,
+          upsellRevenue: 1,
+          lifeTimeValue: 1,
+          customerRevenue: 1,
         },
       },
     ]);
@@ -129,14 +134,14 @@ exports.updateTagsToStores = async (req, res) => {
       notes,
     } = req.body || {};
 
-    // 🔴 domains mandatory
+    //domains mandatory
     if (!Array.isArray(domains) || !domains.length) {
       return res.status(400).json({
         error: 'domains must be a non-empty array',
       });
     }
 
-    // 🔴 at least one of tags or notes required
+    //at least one of tags or notes required
     const hasValidTags = Array.isArray(tags) && tags.length;
     const hasNotes = typeof notes === 'string' && notes.trim();
 
@@ -146,7 +151,7 @@ exports.updateTagsToStores = async (req, res) => {
       });
     }
 
-    // 🔹 build update object dynamically
+    //build update object dynamically
     const update = {};
 
     // add tags if provided
@@ -182,31 +187,23 @@ exports.updateTagsToStores = async (req, res) => {
   }
 };
 
-
 exports.removeTagsFromStores = async (req, res) => {
   try {
-        const { domains = [], tags = [], isBlock } = req.body;
+    const { domains = [], isBlock } = req.body;
 
-        if (!domains.length) {
+    if (!domains.length) {
       return res.status(400).json({
         error: 'domains must be a non-empty array',
       });
     }
 
-    const update = {
-      $set: {},
-    };
+    //Prepare update object conditionally
+    const update = { $set: {} };
 
-    // 🔹 TAG LOGIC (SAME BEHAVIOUR)
-    if (tags.length) {
-      update.$pull = { tags: { $in: tags } };
-    } else {
-      update.$set.tags = [];
-    }
-
-    // 🔹 isBlock LOGIC (GUARANTEED)
     if (typeof isBlock === 'boolean') {
       update.$set.isBlock = isBlock;
+    } else {
+      update.$set.tags = [];
     }
 
     const result = await PartnerStore.updateMany(
@@ -216,12 +213,13 @@ exports.removeTagsFromStores = async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Tags removed successfully',
+      message: 'Update applied successfully',
       matchedStores: result.matchedCount,
       updatedStores: result.modifiedCount,
     });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to remove tags' });
+    res.status(500).json({ error: 'Failed to update stores' });
   }
 };
+
