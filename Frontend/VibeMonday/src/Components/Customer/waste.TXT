@@ -1,0 +1,621 @@
+// FILTER VALA MODAL HEADER -> 
+
+
+
+              {/* <ModalHeader    >
+
+
+                <Box paddingY="medium">
+
+                  <Flex
+                    align="center"
+                    justify="space-between"
+
+                  // style={{ paddingTop: 8  }}
+                  >
+
+                    <Box>
+                      <Text type="text1" weight="bold">
+                        Filter
+                      </Text>
+
+                    </Box>
+
+                    <Button
+                      size="small"
+                      kind="primary"
+                      onClick={() => console.log("Reset clicked")}
+                    >
+                      Add To Preset
+                    </Button>
+                  </Flex>
+                </Box>
+
+
+                
+                
+                
+                
+                </ModalHeader> */}
+
+
+
+
+
+
+
+
+
+
+
+import { useParams } from "react-router-dom";
+
+const { id } = useParams();
+
+useEffect(() => {
+  if (!id) return;
+
+  const getCustomerDetails = async () => {
+    try {
+      const res = await axios.get(
+        `https://kindra-unsonorous-gale.ngrok-free.dev/api/partner-store/details`,
+        {
+          headers: {
+            "ngrok-skip-browser-warning": "true",
+            Accept: "application/json",
+          },
+          params: {
+            shopDomain: id,
+          },
+        }
+      );
+
+      console.log("Customer Details 👉", res.data.data);
+    } catch (error) {
+      console.log("API Error", error);
+    }
+  };
+
+  getCustomerDetails();
+}, [id]);
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////Filter Modal for  cUSTOMER////////////////////////////////////
+
+
+
+   {/* <Box>
+          <Box
+            className={`side-filter-panel ${isModalOpen ? "open" : ""}`}
+          >
+
+            <Box padding="medium" borderBottom="1px solid #e6e6e6" className="header">
+              <Flex align="center" justify="space-between">
+                <Text type="text1" weight="bold">Filter</Text>
+
+                <Flex gap={8}>
+                  <Button size="xs" kind="primary" >
+                    Add To Preset
+                  </Button>
+
+                  <Button
+                    size="small"
+                    kind="tertiary"
+                    onClick={() => setIsModalOpen(false)}
+                    rightIcon={CloseSmall}
+                  >
+
+                  </Button>
+                </Flex>
+              </Flex>
+            </Box>
+
+            <ModalContent className="content" >
+              <Box>
+                <Flex direction="column" gap={5} align="start">
+
+                  <Box>
+                    <Text type="text1" weight="bold">
+                      Plan
+                    </Text>
+                  </Box>
+
+
+
+                  <Box>
+                    <Flex gap={10}>
+                      {["Trail", "Bronze", "Gold", "Silver", "Custom"].map((item) => (
+                        <Checkbox
+                          key={item}
+                          label={item}
+                          checked={aePlan.includes(item)}
+                          onChange={() => toggleArrayValue(setAePlan, item)}
+                        />
+                      ))}
+                    </Flex>
+                  </Box>
+
+                  <Divider />
+                </Flex>
+
+              </Box>
+
+              <Box>
+                <Flex direction="column" gap={5} align="start">
+
+                  <Box>
+                    <Text type="text1" weight="bold">
+                      Shopify Plan
+                    </Text>
+                  </Box>
+
+
+                  <Box>
+                    <Flex gap={10}>
+                      {["Basic", "Grow", "Advance", "Plus"].map((item) => (
+                        < Checkbox
+                          key={item}
+                          label={item}
+                          checked={shopifyPlan.includes(item)}
+                          onChange={() => toggleArrayValue(setShopifyPlan, item)}
+                        />
+
+                      ))}
+                    </Flex>
+                  </Box>
+
+
+                  <Divider />
+                </Flex>
+
+              </Box>
+
+              <Box>
+                <Flex direction="column" gap={5} align="start">
+
+                  <Box>
+                    <Text type="text1" weight="bold">
+                      Status
+                    </Text>
+                  </Box>
+
+
+                  <Box>
+                    <Flex gap={10}>
+                      {["Active", "Trial", "Uninstall"].map((item) => (
+                        < Checkbox
+                          key={item}
+                          label={item}
+                          checked={status.includes(item)}
+                          onChange={() => toggleArrayValue(setStatus, item)}
+                        />
+
+                      ))}
+
+                    </Flex>
+                  </Box>
+
+
+                  <Divider />
+                </Flex>
+
+              </Box>
+
+
+
+              <Box>
+                <Flex direction="column" gap={5}
+                  align="start"
+                >
+
+                  <Box>
+                    <Text type="text1" weight="bold">
+                      Tags
+                    </Text>
+                  </Box>
+
+
+                  <Box style={{ width: "100%" }} >
+                    <Flex justify="space-between" >
+                      <Box style={{ width: "75%", display: "flex", flexWrap: "wrap", gap: "8px" }} >
+                        {tags.map((tg) => {
+                          const [isChipSlected, setisChipSlected] = useState(false)
+
+                          return (
+
+                            <Chips label={tg} readOnly rightIcon={isChipSlected ? Check : null} onClick={() => setisChipSlected(!isChipSlected)} />
+                          )
+                        })}
+                      </Box>
+
+
+                      
+
+                    </Flex>
+                   
+                  </Box>
+
+
+                  <Divider />
+                </Flex>
+
+              </Box>
+
+
+              <Box>
+                <Flex direction="column" gap={5} align="start">
+
+                  <Box>
+                    <Text type="text1" weight="bold">
+                      Country
+                    </Text>
+                  </Box>
+
+
+                  <Box>
+                    <Flex gap={0}>
+                      <Box style={{ width: "300px" }}>
+
+                        <Dropdown placeholder="Search an item" searchable clearAriaLabel="Clear" />
+                      </Box>
+
+                    </Flex>
+                  </Box>
+
+
+                  <Divider />
+                </Flex>
+              </Box>
+
+
+
+
+              <Box>
+                <Flex direction="column" gap={5} align="start">
+
+                  <Box>
+                    <Text type="text1" weight="bold">
+                      Segments
+                    </Text>
+                  </Box>
+
+
+                  <Box>
+                    <Flex gap={10}>
+                      {["High Edits", "Heavy UpSell", "Churn Watch"].map((item) => (
+                        < Checkbox
+                          key={item}
+                          label={item}
+                          checked={segments.includes(item)}
+                          onChange={() => toggleArrayValue(setSegments, item)}
+                        />
+
+                      ))}
+
+                    </Flex>
+                  </Box>
+
+
+                  <Divider />
+                </Flex>
+
+              </Box>
+
+
+
+              <Box>
+                <Flex direction="column" gap={5} align="start">
+
+                  <Box>
+                    <Text type="text1" weight="bold">
+                      Number of Days
+                    </Text>
+                  </Box>
+
+
+                  <Box>
+                    <Flex gap={5}>
+                      <Box style={{ display: "inline-flex", border: "1px solid #ccc", borderRadius: "6px", overflow: "hidden", fontFamily: "sans-serif" }}>
+                        <TextField
+
+                          placeholder="Min Days"
+                          size="small"
+                          type="number"
+                          value={days.min}
+                          onChange={(value) => handleDaysChange("min", value)}
+
+                        />
+                        <Text type="text2" style={{
+                          backgroundColor: "#d1d5db", // grey like screenshot
+                          // padding: "8px 12px",
+                          // fontSize: "12px",
+                          // fontWeight: "500",
+                          // color: "#111",
+                          display: "flex",
+                          alignItems: "center"
+                        }}>Min Days</Text>
+
+                      </Box>
+
+                      <Box style={{ display: "inline-flex", border: "1px solid #ccc", borderRadius: "6px", overflow: "hidden", fontFamily: "sans-serif" }}>
+                        <TextField id="sizes-small"
+                          placeholder="Max Days"
+                          size="small"
+                          type="number"
+                          value={days.max}
+                          onChange={(value) => handleDaysChange("max", value)}
+                          style={{
+                            width: "60px",
+                            // padding: "8px",
+                            border: "none",
+                            borderRadius: "0",
+                            outline: "none",
+                            textAlign: "center"
+                          }}
+                        />
+                        <Text type="text2" style={{
+                          backgroundColor: "#d1d5db", // grey like screenshot
+                          // padding: "8px 12px",
+                          // fontSize: "14px",
+                          // fontWeight: "500",
+                          // color: "#111",
+                          display: "flex",
+                          alignItems: "center"
+                        }}>Max Days</Text>
+                      </Box>
+
+
+
+                    </Flex>
+
+                  </Box>
+
+                  <Divider />
+
+                </Flex>
+
+              </Box>
+
+              <Box>
+                <Flex direction="column" gap={5} align="start">
+
+                  <Box>
+                    <Text type="text1" weight="bold">
+                      Number of Order
+                    </Text>
+                  </Box>
+
+
+                  <Box>
+                    <Flex gap={5}>
+                      <Box style={{ display: "inline-flex", border: "1px solid #ccc", borderRadius: "6px", overflow: "hidden", fontFamily: "sans-serif" }}>
+                        <TextField
+
+                          placeholder="Min Order"
+                          size="small"
+                          type="number"
+                          value={days.min}
+                          onChange={(value) => handleDaysChange("min", value)}
+
+                        />
+                        <Text type="text2" style={{
+                          backgroundColor: "#d1d5db", // grey like screenshot
+                          // padding: "8px 12px",
+                          // fontSize: "12px",
+                          // fontWeight: "500",
+                          // color: "#111",
+                          display: "flex",
+                          alignItems: "center"
+                        }}>Min Ord.</Text>
+
+                      </Box>
+
+                      <Box style={{ display: "inline-flex", border: "1px solid #ccc", borderRadius: "6px", overflow: "hidden", fontFamily: "sans-serif" }}>
+                        <TextField id="sizes-small"
+                          placeholder="Max Order"
+                          size="small"
+                          type="number"
+                          value={days.max}
+                          onChange={(value) => handleDaysChange("max", value)}
+                          style={{
+                            // width: "30px",
+                            // padding: "8px",
+                            border: "none",
+                            borderRadius: "0",
+                            outline: "none",
+                            textAlign: "center"
+                          }}
+                        />
+                        <Text type="text2" style={{
+                          backgroundColor: "#d1d5db", // grey like screenshot
+                          // padding: "8px 12px",
+                          // fontSize: "14px",
+                          // fontWeight: "500",
+                          // color: "#111",
+                          display: "flex",
+                          alignItems: "center"
+                        }}>Max Ord.</Text>
+                      </Box>
+
+
+
+                    </Flex>
+
+                  </Box>
+
+
+                </Flex>
+
+              </Box>
+
+
+            </ModalContent>
+
+            <ModalFooter className="footer">
+              <Flex gap={5} justify="end">
+                <Button kind="secondary" onClick={() => {
+                  setIsModalOpen(false);
+                  handleClearall();
+                  getStore();
+
+                }}>Clear</Button>
+                <Button type="primary" onClick={() => {
+                  setIsModalOpen(false);
+                  getStore(shopifyPlan, aePlan, status, days)
+                }}>Apply</Button>
+              </Flex>
+            </ModalFooter>
+          </Box>
+        </Box> */}
+
+
+
+
+
+
+        ////////////////custormer Toggle user Info Modal ///////////////////////////////
+
+
+
+
+        {/* <Box className={`side-quickinformation-panel ${userInfo ? "open" : ""}`}>
+
+
+          <Box className="header">
+            <Flex align="center" justify="space-between">
+              <Text type="text1" weight="bold">Quick Information</Text>
+
+              <Button rightIcon={CloseSmall} kind="tertiary" onClick={() => setUserIfo(false)} size="small"></Button>
+            </Flex>
+          </Box>
+
+          <ModalContent>
+            <Box border style={{
+              borderTopLeftRadius: "4px", borderTopRightRadius: "4px", border: "1px solid #D4852F",
+            }}>
+              {customerInfo &&
+
+                <Flex direction="column" gap={12} >
+
+                  <Box
+                    padding="small"
+                    style={{
+                      width: "100%",
+                      background: "#D4852F",
+                      color: "#fff"
+                    }}
+                  >
+
+
+                    <Flex direction="column" gap={15} align="start"  >
+                      <Flex gap={10} wrap>
+                        <Flex gap="xs" align="center">
+                          <Icon icon={UserDomain} />
+                          <Text type='text3' color="#FFFFFF">{customerInfo.name}</Text>
+                        </Flex>
+
+
+                        <div style={{ width: 1, height: 24, backgroundColor: "#ffffff" }} />
+
+
+                        <Flex gap="xs" align="center">
+                          <Icon icon={Email} />
+                          <Text type='text3' color="#FFFFFF">{customerInfo.customer_email}</Text>
+                        </Flex>
+                      </Flex>
+
+
+                      <Flex gap={10} wrap>
+                        <Flex gap="xs" align="center">
+                          <Icon icon={CreditCard} />
+                          <Text type='text3' color="#FFFFFF">{customerInfo.domain}</Text>
+                        </Flex>
+
+                        <div style={{ width: 1, height: 24, backgroundColor: "#ffffff" }} />
+
+                        <Flex gap="xs" align="center">
+                          <Icon icon={Globe} />
+
+                          <Text type='text3' color="#FFFFFF">{customerInfo.country_code}</Text>
+                        </Flex>
+
+                        <div style={{ width: 1, height: 24, backgroundColor: "#ffffff" }} />
+
+                        <Flex gap="xs" align="center">
+                          <Icon icon={Numbers} />
+                          <Text type='text3' color="#ffffff">{customerInfo.phone}</Text>
+                        </Flex>
+                      </Flex>
+                    </Flex>
+                  </Box>
+
+
+
+
+
+                  <Box padding="small" style={{ width: "100%" }}>
+                    <Flex direction="column" align="start" gap={10}>
+                      <Flex gap={2} align="center" >
+                        <Icon icon={Tags} />
+                        <Text>Tags:</Text>
+                        {customerInfoTag.map((tag) => (
+
+                          <Chips label={tag} readOnly />
+                        ))}
+                      </Flex>
+                      <Divider />
+
+
+                      <Flex gap="small" align="center">
+                        <Icon icon={Activity} />
+                        <Text>Status:</Text>
+                        <Chips
+                          label="ACTIVE" readOnly
+                          color="positive"
+                        />
+                      </Flex>
+
+                      <Divider />
+
+                      <Flex gap="small" align="center">
+                        <Icon icon={Activity} />
+                        <Text>
+                          Segment: Gold users, High edit
+                        </Text>
+                      </Flex>
+
+                    </Flex>
+
+                  </Box>
+                </Flex>
+              }
+
+
+
+            </Box>
+
+
+          </ModalContent>
+
+          <ModalFooter>
+
+            <Button
+              onClick={() => navigate(`/customerdetails/${selectedDomain}`)}
+              kind="secondary"
+              rightIcon={ExternalPage}
+              style={{ width: "100%" }}
+            >
+              View Full Profile
+
+            </Button>
+          </ModalFooter>
+        </Box> */}

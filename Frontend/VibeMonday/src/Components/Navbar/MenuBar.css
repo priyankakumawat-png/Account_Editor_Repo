@@ -1,0 +1,169 @@
+.nav-bar-container {
+  background: linear-gradient(180deg, #FDFEFE 0%, #EEF1FC 100%);
+  /* height: 100vh; */
+  border-radius: 10px;
+  width: 220px;
+  /* padding: 10px 10px 10px 10px; */
+}
+
+
+
+.listmenu {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.list-item-menu {
+  cursor: pointer;
+  width: 100%;
+  color: #676879;
+  
+  /* padding: 10px; */
+}
+
+.list-item-menu:hover {
+  background-color: #E2EAFE !important;
+
+}
+
+.list-item-menu.active {
+  background-color: #E2EAFE !important;
+  /* border-left: 4px solid #5b7cff; */
+  border-radius: 4px;
+  font-weight: 600;
+    /* padding: 10px 14px; */
+
+}
+
+
+
+
+
+
+
+
+.menu-wrapper {
+  width: 200px;
+  font-family: system-ui, sans-serif;
+}
+
+/* Parent */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.menu-item.parent {
+  /* background:  #E2EAFE; */
+  font-weight: 500;
+  color: #676879;
+}
+.menu-item.parent:hover {
+  background:  #E2EAFE;
+  font-weight: 500;
+  color: #676879;
+}
+.menu-item.parent.active {
+  background:  #E2EAFE;
+  font-weight: 500;
+  color: #676879;
+}
+
+/* Sub menu container */
+.submenu {
+  position: relative;
+  /* margin-top: 4px; */
+}
+
+/* vertical line */
+.submenu::before {
+  content: "";
+  position: absolute;
+  left: 16px;
+  top: 6px;
+  width: 1px;
+  height: 81%;
+  width: 2px;
+  background-color: #C3C6D4;
+}
+
+/* Child */
+.menu-item.child {
+  padding-left: 16px;
+  color: #C3C6D4;
+}
+
+.menu-item.child .icon {
+  z-index: 1;
+  /* background: #fff; */
+}
+
+/* Active */
+.menu-item.active {
+  /* background: #f5f7fa; */
+  color: #111827;
+  font-weight: 600;
+}
+
+.menu-item.child:hover {
+  background: #f1f5f9;
+}
+
+
+
+
+
+/* 
+.menu-wrapper {
+  width: 220px;
+  font-family: system-ui, -apple-system, sans-serif;
+  position: relative;
+}
+
+.menu-wrapper::before {
+  content: "";
+  position: absolute;
+  left: 26px;
+  top: 44px;
+  width: 1px;
+  height: calc(100% - 44px);
+  background-color: #79797a;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+
+.menu-item.parent {
+  background-color: #e8efff;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.menu-item.child {
+  padding-left: 32px;
+}
+
+.menu-item.active {
+  background-color: #f5f7fa;
+  color: #111827;
+  font-weight: 600;
+}
+
+.menu-item:not(.parent):hover {
+  background-color: #f1f5f9;
+} */

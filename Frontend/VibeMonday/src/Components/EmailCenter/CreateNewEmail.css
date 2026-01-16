@@ -1,0 +1,119 @@
+*{
+            font-family: "Figtree", sans-serif;
+
+}
+
+
+.createmainemailconti{
+     font-family: "Figtree", sans-serif;
+   
+}
+
+
+.inter-textfiled{
+    font-size: 14px ;
+    font-weight: 600 !important;
+         font-family: "Figtree", sans-serif;
+/* overflow: visible; */
+}
+
+
+.tabsforemail{
+    height: 100%;
+    /* width: 100%; */
+   
+}
+
+.tabslist{
+    background-color:#ECEFF8 ;
+    flex:1
+    /* display: flex; */
+    /* justify-content: space-between !important;  */
+}
+
+.desktopmobile{
+      background-color:#ECEFF8 ;
+
+    /* display: flex; */
+    /* align-items: start; */
+}
+
+.textfirld{
+    height: 100vh !important;
+    width: 100% !important;
+    background-color: #2E2F33;
+    color:  #ffffff;
+    border: none;
+    outline: none;
+     white-space: pre;
+    
+}
+
+.checkeneable{
+    color: green;
+}
+
+
+
+
+.email-editor {
+  flex: 1;
+  width: 100%;
+  background: #2E2F33;
+  color: #ffffff;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 16px;
+  font-family: "Fira Code", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow: auto;
+}
+
+.email-editor::placeholder {
+  color: #9fa2b4;
+}
+
+
+
+
+
+
+/* COMMON PREVIEW STYLE */
+.email-preview {
+  background: #ffffff;
+  border: 1px solid #d0d4e4;
+  padding: 20px;
+  overflow: auto;
+  transition: all 0.3s ease;
+}
+
+/* DESKTOP VIEW */
+.email-preview-desktop {
+  width: 720px;
+  height: 416px;
+}
+
+/* MOBILE VIEW */
+.email-preview-mobile {
+  width: 280px;       
+  height: 416px ; 
+  /* border-radius: 20px; */
+}
+
+
+
+.footer-btnof{
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  justify-content: end;
+}
+
+.maininner{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px !important;
+}

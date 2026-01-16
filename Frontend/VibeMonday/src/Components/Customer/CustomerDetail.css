@@ -1,0 +1,7 @@
+.customer-details-cont{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+        font-family: "Figtree", sans-serif;
+
+}
