@@ -458,7 +458,7 @@ export default function CustomerList() {
                         <Divider />
                         <Text type="text2">Add To Segments</Text>
                         <Divider />
-                        <Text type="text2" style={{ cursor: "pointer" }} onClick={blockUser}>Block User</Text>
+                        <Text type="text2" style={{ cursor: "pointer" }} onClick={removeTags}>Block User</Text>
                       </Flex>
                     </Box>
                   )}
