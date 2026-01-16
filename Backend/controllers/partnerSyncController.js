@@ -2,11 +2,7 @@ const { callPartnerGraphql } = require('../config/shopify-partner');
 const PartnerEvent = require('../models/PartnerEvent');
 
 /**
- * This query fetches ALL important events:
- * - RelationshipInstalled  (NEW STORE INSTALL)
- * - RelationshipUninstalled
- * - SubscriptionChargeActivated
- * - SubscriptionChargeCanceled
+ * Fetch ALL partner app events
  */
 const APP_ALL_EVENTS_QUERY = `
 query AppAllEvents($appId: ID!, $first: Int!, $after: String) {
@@ -21,6 +17,7 @@ query AppAllEvents($appId: ID!, $first: Int!, $after: String) {
           app {
             id
             name
+            apiKey
           }
           shop {
             id
@@ -89,36 +86,64 @@ exports.syncFromPartner = async (req, res) => {
         if (!event.shop) continue;
 
         /**
-         * IMPORTANT UPSERT
-         * - New store install → INSERT
-         * - Existing store event → INSERT new event (no duplicate)
+         * ✅ SMART UNIQUE FILTER
+         * - Charge events → unique by chargeId
+         * - Non-charge events → unique by occurredAt
+         */
+        const filter = {
+          typename: event.__typename,
+          'app.appId': event.app.id,
+          'shop.shopId': event.shop.id,
+        };
+
+        if (event.charge?.id) {
+          // charge based events
+          filter['charge.chargeId'] = event.charge.id;
+        } else {
+          // non-charge events (install, uninstall, others)
+          filter.occurredAt = event.occurredAt;
+        }
+
+        /**
+         * ✅ UPSERT
+         * - New event → INSERT
+         * - Existing event → UPDATE
          */
         await PartnerEvent.updateOne(
+          filter,
           {
-            typename: event.__typename,
-            occurredAt: event.occurredAt,
-            'shop.shopId': event.shop.id,
-            'charge.chargeId': event.charge?.id || null,
-          },
-          {
+            // 🆕 only on insert
             $setOnInsert: {
+              createdAt: new Date(),
+            },
+
+            // 🔁 always update with latest data
+            $set: {
               typename: event.__typename,
               occurredAt: event.occurredAt,
-              app: event.app,
+              updatedAt: new Date(),
+
+              app: {
+                appId: event.app.id,
+                name: event.app.name,
+                apiKey: event.app.apiKey,
+              },
+
               shop: {
                 shopId: event.shop.id,
                 name: event.shop.name,
                 myshopifyDomain: event.shop.myshopifyDomain,
               },
+
               charge: event.charge
                 ? {
-                  chargeId: event.charge.id,
-                  name: event.charge.name,
-                  amount: event.charge.amount.amount,
-                  currencyCode: event.charge.amount.currencyCode,
-                  billingOn: event.charge.billingOn,
-                  test: event.charge.test,
-                }
+                    chargeId: event.charge.id,
+                    name: event.charge.name,
+                    amount: event.charge.amount.amount,
+                    currencyCode: event.charge.amount.currencyCode,
+                    billingOn: event.charge.billingOn,
+                    test: event.charge.test,
+                  }
                 : null,
             },
           },

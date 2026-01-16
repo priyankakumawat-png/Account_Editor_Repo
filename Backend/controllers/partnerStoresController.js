@@ -50,11 +50,11 @@ exports.getPartnerStores = async (req, res) => {
         break;
 
       //EDITS SORTING
-      case 'higher_edits':
+      case 'highest_edits':
         sortStage = { totalEdit: -1 };
         break;
 
-      case 'lower_edits':
+      case 'lowest_edits':
         sortStage = { totalEdit: 1 };
         break;
 
@@ -223,7 +223,7 @@ exports.getPartnerStores = async (req, res) => {
           ownerName: '$partnerStore.shopJson.shop_owner',
           shopifyPlan: '$partnerStore.shopJson.plan_name',
           tags: '$partnerStore.tags',
-          AEplan: 1,
+          AEplan: '$latestEvent.charge.name',
           status: 1,
         },
       },

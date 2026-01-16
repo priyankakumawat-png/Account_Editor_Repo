@@ -34,6 +34,7 @@ const axios = require('axios');
 
 const partnerDetailSyncCron = require('./partnerDetailSyncCron');
 const partnerAnalyticSyncCron = require('./partnerAnalyticSyncCron');
+const runAppSubscriptionSalesCron = require('./appSubscriptionSaleCron');
 
 cron.schedule('0 * * * *', async () => {
   console.log('Hourly partner cron started');
@@ -50,6 +51,12 @@ cron.schedule('0 * * * *', async () => {
     );
 
     console.log('Partner subscription sync completed');
+
+  console.log('Syncing partner subscription sales');
+await runAppSubscriptionSalesCron({
+  appId: 'gid://partners/App/228669423617',
+});
+console.log('Partner subscription sales sync completed');
 
     //Partner detail sync
     if (typeof partnerDetailSyncCron === 'function') {

@@ -62,7 +62,8 @@ module.exports = async function partnerDetailSyncCron() {
               upsellRevenue: result.upsellRevenue || 0,
               orders: result.orders || 0,
               totalEdit: result.totalEdit || 0,
-              customerRevenue: result.customerRevenue || 0
+              customerRevenue: result.customerRevenue || 0,
+              isFreePlan: result.isFreePlan
             },
           },
           { upsert: true }
