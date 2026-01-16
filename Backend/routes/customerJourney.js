@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { getCustomerJourney } = require('../controllers/CustomerJourneyController');
+const { protect, onlySuperAdmin } = require('../middleware/auth');
 
-router.get('/', getCustomerJourney); // <-- just '/' because you already mounted at /api/customer-journey
+// 🔐 Protected (token REQUIRED)
+router.use(protect, onlySuperAdmin);
+router.get('/:shopDomain', getCustomerJourney);
 
 module.exports = router;
